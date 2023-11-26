@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tmaskpl-flask-app
+  labels:
+    app: tmaskpl-flask-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tmaskpl-flask-app
+  template:
+    metadata:
+      labels:
+        app: tmaskpl-flask-app
+    spec:
+      containers:
+      - name: tmaskpl-flask-app
+        image: 192.168.49.2:5000/tmaskpl-flask-app:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8888
+        env:
+        - name: FLASK_ENV
+          value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tmaskpl-flask-app-service
+  labels:
+    app: tmaskpl-flask-app
+spec:
+  selector:
+    app: tmaskpl-flask-app
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8888
+  type: LoadBalancer
